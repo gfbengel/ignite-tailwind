@@ -3,10 +3,8 @@
 import { FileItem } from './FileItem'
 import { useFileInput } from './Root'
 
-export interface FileListProps {}
-
-export function FileList(props: FileListProps) {
-  const { files } = useFileInput()
+export function FileList() {
+  const { files, handleDeleteFile } = useFileInput()
 
   if (files.length === 0) {
     return null
@@ -14,14 +12,15 @@ export function FileList(props: FileListProps) {
 
   return (
     <div className="mt-4 flex flex-col gap-3">
-      {files.map((file) => {
+      {files.map((file, index) => {
         return (
           <FileItem
             key={file.name}
             name={file.name}
             size={file.size}
             type={file.type}
-            state="error"
+            handleDeleteFile={() => handleDeleteFile(index)}
+            state="progress"
           />
         )
       })}

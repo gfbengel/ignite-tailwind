@@ -34,9 +34,16 @@ export interface FileItemProps extends VariantProps<typeof fileItem> {
   name: string
   size: number
   type: string
+  handleDeleteFile: () => void
 }
 
-export function FileItem({ state, name, size, type }: FileItemProps) {
+export function FileItem({
+  state,
+  name,
+  size,
+  type,
+  handleDeleteFile,
+}: FileItemProps) {
   const uploadProgress = state === 'complete' ? '100%' : '25%'
 
   const fileSize = useMemo(() => {
@@ -105,7 +112,12 @@ export function FileItem({ state, name, size, type }: FileItemProps) {
       {state === 'complete' ? (
         <CheckCircle2 className="h-5 w-5 fill-violet-600 text-white dark:fill-violet-300 dark:text-zinc-900" />
       ) : (
-        <Button type="button" variant="ghost" className={deleteButton()}>
+        <Button
+          type="button"
+          variant="ghost"
+          className={deleteButton()}
+          onClick={handleDeleteFile}
+        >
           <Trash2 className="h-5 w-5" />
         </Button>
       )}

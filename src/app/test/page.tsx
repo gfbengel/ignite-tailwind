@@ -1,55 +1,25 @@
 'use client'
 
+import { Button } from '@/components/Button'
 import * as FileInput from '@/components/Form/FileInput'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+const zodFileType = z.custom<File>((value) => value instanceof File)
+
 const tmpFormSchema = z.object({
-  photo: z
-    .array(
-      z.object({
-        name: z.string(),
-        size: z.number(),
-        type: z.string(),
-      }),
-    )
-    .refine((value) => value.length > 0, {
-      message: 'A foto é obrigatória',
-    })
-    .refine((value) => value.length !== 0, {
-      message: 'Selecione apenas uma foto.',
-    })
-    .transform((value) =>
-      value.map(
-        (file) =>
-          new File(
-            [new Blob([JSON.stringify(file)], { type: file.type })],
-            file.name,
-          ),
-      ),
-    ),
-  projects: z
-    .array(
-      z.object({
-        name: z.string(),
-        size: z.number(),
-        type: z.string(),
-      }),
-    )
-    .refine((value) => value.length > 0, {
-      message: 'O arquivo é obrigatório',
-    })
-    .transform((value) =>
-      value.map(
-        (file) =>
-          new File(
-            [new Blob([JSON.stringify(file)], { type: file.type })],
-            file.name,
-          ),
-      ),
-    ),
+  photo: z.array(zodFileType).refine(
+    (v) => v.length === 1,
+    (v) => ({
+      message:
+        v.length === 0 ? 'A foto é obrigatória' : 'Selecione apenas uma foto.',
+    }),
+  ),
+  projects: z.array(zodFileType).refine((value) => value.length > 0, {
+    message: 'Selecione ao menos um projeto.',
+  }),
 })
 
 type FormData = z.infer<typeof tmpFormSchema>
@@ -100,9 +70,7 @@ export default function Test() {
                 </div>
                 {error ? (
                   <span className="text-red-500">{error.message}</span>
-                ) : (
-                  name
-                )}
+                ) : null}
               </FileInput.Root>
             )}
           />
@@ -133,20 +101,23 @@ export default function Test() {
               >
                 <FileInput.Trigger />
                 <FileInput.FileList />
-                <FileInput.Control accept="image/*" />
+                <FileInput.Control />
                 {error ? (
                   <span className="text-red-500">{error.message}</span>
-                ) : (
-                  name
-                )}
+                ) : null}
               </FileInput.Root>
             )}
           />
         </div>
 
-        <button type="submit" form="settings">
-          Save
-        </button>
+        <div className="flex items-center justify-end gap-2 pt-5">
+          <Button type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button type="submit" form="settings" variant="primary">
+            Save
+          </Button>
+        </div>
       </form>
     </>
   )
